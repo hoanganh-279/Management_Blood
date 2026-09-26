@@ -1,0 +1,13 @@
+---
+description: Bảo mật, riêng tư dữ liệu y tế và minh bạch thuật toán
+alwaysApply: true
+---
+
+# Security & privacy
+
+- Thu thập dữ liệu cá nhân/y tế **tối thiểu** theo mục tiêu hệ thống.
+- Không commit `.env`, key, dump dữ liệu thật; dùng `.env.example` làm mẫu.
+- Phân quyền theo vai trò; hạn chế truy cập nhu cầu BV và tồn kho nhạy cảm.
+- Matching và cảnh báo phải giải thích được; không trình bày như chỉ định y tế **hoặc** quyết định pháp lý bắt buộc.
+- Dữ liệu thật cần giấy phép; prototype ưu tiên synthetic dataset và ghi rõ nguồn.
+- Audit log cho thao tác nhạy cảm: xem kho, xuất dữ liệu, chạy matching hàng loạt, **mọi chuyển trạng thái điều chuyển** (`transfer_events`).

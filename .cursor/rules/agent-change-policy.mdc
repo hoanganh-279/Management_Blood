@@ -1,0 +1,30 @@
+---
+description: Hỏi trước khi đổi hệ thống; đọc đủ nghiệp vụ; không đoán; đồng bộ tài liệu
+alwaysApply: true
+---
+
+# Agent change policy — Management Blood
+
+## Hỏi trước, không tự hành động
+
+Trước mọi thay đổi lớn — thêm/sửa/xóa code hoặc file, đổi schema, kiến trúc, refactor lớn, commit/push — **mô tả thay đổi và chờ người dùng đồng ý**. Không tự triển khai.
+
+## Đọc đủ miền nghiệp vụ
+
+Khi sửa chức năng hoặc logic hệ thống: đọc **toàn bộ** thư mục và file đúng nghiệp vụ liên quan (service/router, schema, migration, UI gọi API, [Product.md](../../Product.md) mục FR, [docs/ke-hoach-chinh-sua.md](../../docs/ke-hoach-chinh-sua.md), [docs/can-cu-phap-ly.md](../../docs/can-cu-phap-ly.md) nếu chạm kho/điều chuyển/matching). Không sửa một file đơn lẻ khi chưa nắm luồng end-to-end. Thứ tự: [AGENTS.md](../../AGENTS.md).
+
+## Không đoán / không ảo hóa
+
+Thắc mắc quy tắc máu, ngưỡng cảnh báo, **trạng thái điều chuyển**, trọng số matching, RBAC, điều khoản pháp lý, UX nghiệp vụ, v.v. → **hỏi lại nghiệp vụ** và dừng cho đến khi được xác nhận. Không bịa thông tin. Công thức DSS chỉ copy từ Product §5.
+
+## System Consistency & Change Documentation
+
+Áp dụng khi thêm/sửa/xóa chức năng; đổi nghiệp vụ, giao diện, UX/UI, luồng xử lý, phân quyền, database, API, kiến trúc.
+
+1. Kiểm tra tài liệu nghiệp vụ hiện tại trước khi triển khai (`Product.md`, `docs/ke-hoach-chinh-sua.md`, `docs/can-cu-phap-ly.md`, rules/skill liên quan).
+2. Nếu thay đổi phát sinh hoặc làm lệch nghiệp vụ / tổng quan hệ thống, **bắt buộc hỏi đúng câu**:
+
+   > "Thay đổi này có được cập nhật vào file tài liệu nghiệp vụ để duy trì tổng quan và tính nhất quán của hệ thống không?"
+
+3. Không tự ý bỏ qua đồng bộ tài liệu.
+4. Sau khi người dùng xác nhận cập nhật tài liệu: (1) thực hiện thay đổi, (2) cập nhật tài liệu nghiệp vụ, (3) kiểm tra tài liệu liên quan, (4) kiểm tra Use Case / Class / Database / API / UI nếu bị ảnh hưởng, (5) đảm bảo tài liệu phản ánh đúng trạng thái hiện tại.

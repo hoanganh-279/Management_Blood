@@ -1,0 +1,3 @@
+# Management Blood — project config placeholder
+# Use `supabase init` / `supabase link` for a live project.
+project_id = "management-blood-mvp"

@@ -1,0 +1,12 @@
+---
+description: Flutter donor app — ngoài phạm vi MVP hiện tại
+globs: donor-app/**/*.dart
+alwaysApply: false
+---
+
+# Donor app (Flutter) — deferred
+
+MVP hiện tại **không** gồm huy động người hiến / `donor-app`.  
+**Không** thiết kế lại donor matching khi chưa đổi Product.md + [docs/can-cu-phap-ly.md](../../docs/can-cu-phap-ly.md) và chưa được duyệt scope.
+
+Nếu mở lại giai đoạn này sau này: chỉ gọi FastAPI JWT; không nhúng matching; UI theo nguyên tắc accessibility đơn giản; TT 04/2014 chỉ khi có module hiến — không trộn với lifecycle Điều 39 BV↔NHM.

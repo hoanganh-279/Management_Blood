@@ -1,0 +1,62 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python / FastAPI
+backend/.venv/
+backend/venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/*.egg-info/
+dist/
+*.egg
+
+# Node / React (admin-web)
+node_modules/
+admin-web/node_modules/
+admin-web/dist/
+admin-web/.vite/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Flutter (donor-app)
+donor-app/.dart_tool/
+donor-app/.packages
+donor-app/build/
+donor-app/.flutter-plugins
+donor-app/.flutter-plugins-dependencies
+donor-app/.pub-cache/
+donor-app/.pub/
+**/*.iml
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs & coverage
+*.log
+coverage/
+htmlcov/
+.coverage
+
+# Misc
+*.local
+backend/*.db
+backend/**/*.db
+
+# Đề cương / tài liệu Word nộp (không đẩy lên GitHub)
+docx/

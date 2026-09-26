@@ -1,0 +1,14 @@
+---
+description: Chuẩn React + Vite + Bootstrap cho web admin
+globs: admin-web/**/*.{js,jsx,ts,tsx,css}
+alwaysApply: false
+---
+
+# Admin web (React)
+
+- Stack: React + Vite + Bootstrap (React-Bootstrap được phép).
+- Functional components; gọi API qua fetch/Axios tới `VITE_API_BASE_URL`.
+- **Không** nhúng logic matching/shortage phức tạp ở frontend — chỉ hiển thị kết quả API.
+- Ưu tiên bảng, form, dashboard cảnh báo/KPI cho nhân viên và admin.
+- Không hardcode secret; không dùng service role Supabase trên client.
+- UI/UX: tuân [ui-ux-design.mdc](ui-ux-design.mdc) mục **B (nội bộ)** — tốc độ, hierarchy cảnh báo, validate tức thì, màu đỏ/vàng/xanh, RBAC trên UI.
