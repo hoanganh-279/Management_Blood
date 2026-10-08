@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Button, Col, Row, Spinner, Table } from 'react-bootstrap'
+import { Button, Col, Row, Table } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import KpiCard from '../components/KpiCard'
+import PageSkeleton from '../components/PageSkeleton'
 
 export default function DashboardPage() {
   const { hasRole } = useAuth()
@@ -34,12 +36,15 @@ export default function DashboardPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <Spinner />
+  if (loading) return <PageSkeleton />
 
   const types = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+']
   const centers = [...new Set(units.map((u) => u.center_id))]
 
-  function cellClass(count, target = 20) {
+  const CELL_TARGET = 20
+
+  function cellClass(count, target = CELL_TARGET) {
+    if (count === 0) return 'empty'
     const cov = count / target
     if (cov < 0.4) return 'critical'
     if (cov < 0.85) return 'warn'
@@ -73,41 +78,49 @@ export default function DashboardPage() {
 
       <Row className="g-3 mb-3">
         <Col md={3}>
-          <div className="kpi-card">
-            <div className="label">Cảnh báo đang mở</div>
-            <div className="value text-danger">{summary.active_alerts}</div>
-            <div className="small">
-              Critical {summary.critical_alerts} · Warning {summary.warning_alerts}
-            </div>
-          </div>
+          <KpiCard
+            icon="alert"
+            tone={summary.critical_alerts ? 'danger' : summary.warning_alerts ? 'warn' : 'safe'}
+            label="Cảnh báo đang mở"
+            value={summary.active_alerts}
+          >
+            Critical {summary.critical_alerts} · Warning {summary.warning_alerts}
+          </KpiCard>
         </Col>
         <Col md={3}>
-          <div className="kpi-card">
-            <div className="label">Độ phủ mạng lưới</div>
-            <div className="value">{summary.network_coverage_pct}%</div>
-            <div className="small">Mục tiêu ≥ 85% (cấu hình prototype)</div>
-          </div>
+          <KpiCard
+            icon="chart"
+            tone={summary.network_coverage_pct >= 85 ? 'safe' : summary.network_coverage_pct >= 40 ? 'warn' : 'danger'}
+            label="Độ phủ mạng lưới"
+            value={`${summary.network_coverage_pct}%`}
+          >
+            Mục tiêu ≥ 85% (cấu hình prototype)
+          </KpiCard>
         </Col>
         <Col md={3}>
-          <div className="kpi-card">
-            <div className="label">Điều chuyển hôm nay</div>
-            <div className="value">{summary.transfers_today}</div>
-            <div className="small">Nhu cầu mở: {summary.open_requests}</div>
-          </div>
+          <KpiCard icon="transfer" label="Điều chuyển hôm nay" value={summary.transfers_today}>
+            Nhu cầu mở: {summary.open_requests}
+          </KpiCard>
         </Col>
         <Col md={3}>
-          <div className="kpi-card">
-            <div className="label">Matching runs</div>
-            <div className="value">{summary.matching_runs}</div>
-            <div className="small">Hết hạn &lt;48h: {summary.units_expiring_48h}</div>
-          </div>
+          <KpiCard icon="target" label="Matching runs" value={summary.matching_runs}>
+            Hết hạn &lt;48h: {summary.units_expiring_48h}
+          </KpiCard>
         </Col>
       </Row>
 
       <div className="table-panel mb-3">
-        <div className="panel-head">Ma trận tồn kho theo cơ sở × nhóm máu</div>
+        <div className="panel-head d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <span>Ma trận tồn kho theo cơ sở × nhóm máu</span>
+          <span className="matrix-legend">
+            <i className="empty" />Hết
+            <i className="critical" />&lt;40%
+            <i className="warn" />&lt;85%
+            <i className="ok" />Đủ
+          </span>
+        </div>
         <div className="table-responsive p-2">
-          <Table size="sm" bordered className="mb-0 align-middle">
+          <Table size="sm" borderless className="matrix-table mb-0 align-middle">
             <thead>
               <tr>
                 <th>Cơ sở</th>
@@ -131,7 +144,12 @@ export default function DashboardPage() {
                     ).length
                     return (
                       <td key={t}>
-                        <div className={`matrix-cell ${cellClass(count)}`}>{count}</div>
+                        <div
+                          className={`matrix-cell ${cellClass(count)}`}
+                          title={`${count}/${CELL_TARGET} đơn vị (mục tiêu prototype)`}
+                        >
+                          {count}
+                        </div>
                       </td>
                     )
                   })}

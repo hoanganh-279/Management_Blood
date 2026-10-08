@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Badge, Button, Col, Row, Spinner, Table } from 'react-bootstrap'
+import { Badge, Button, Col, Row, Table } from 'react-bootstrap'
+import PageSkeleton from '../components/PageSkeleton'
 import { useSearchParams, Link } from 'react-router-dom'
 import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
@@ -43,7 +44,7 @@ export default function AlertsPage() {
     })
   }
 
-  if (loading) return <Spinner />
+  if (loading) return <PageSkeleton />
 
   return (
     <div>

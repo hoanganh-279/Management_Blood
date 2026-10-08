@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Alert, Badge, Button, Col, Form, Modal, Row, Spinner, Table } from 'react-bootstrap'
+import { Alert, Badge, Button, Col, Form, Modal, Row, Table } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import DssNote from '../components/DssNote'
+import EmptyState from '../components/EmptyState'
+import MiniStepper from '../components/MiniStepper'
+import PageSkeleton from '../components/PageSkeleton'
+import StatusChip from '../components/StatusChip'
 import TransferStepIndicator from '../components/TransferStepIndicator'
 import { useConfirm } from '../hooks/useConfirm'
 
@@ -129,7 +134,7 @@ export default function TransfersPage() {
     le_minus_18C: '≤ −18°C (HT đông lạnh)',
   }
 
-  if (loading) return <Spinner />
+  if (loading) return <PageSkeleton cards={0} />
 
   return (
     <div>
@@ -147,10 +152,10 @@ export default function TransfersPage() {
         )}
       </div>
 
-      <Alert variant="secondary" className="py-2 small">
+      <DssNote>
         DSS hỗ trợ quyết định điều phối — không thay thẩm quyền chuyên môn hay pháp lý. Checklist VC/nhập
         theo tinh thần TT 26/2013 Điều 20 &amp; 40 (ghi nhận, không IoT).
-      </Alert>
+      </DssNote>
 
       {feedback && (
         <Alert variant={feedback.type} dismissible onClose={() => setFeedback(null)}>
@@ -159,6 +164,19 @@ export default function TransfersPage() {
       )}
 
       <div className="table-panel">
+        {!list.length ? (
+          <EmptyState
+            icon="transfer"
+            title="Chưa có điều chuyển nào"
+            hint="Điều chuyển được tạo từ kết quả Matching cơ sở nguồn."
+          >
+            {hasRole('admin') && (
+              <Button as={Link} to="/matching" variant="danger" size="sm">
+                Chạy matching để tạo đề xuất
+              </Button>
+            )}
+          </EmptyState>
+        ) : (
         <Table hover size="sm" className="mb-0">
           <thead>
             <tr>
@@ -179,9 +197,10 @@ export default function TransfersPage() {
                 onClick={() => setSelected(t)}
               >
                 <td>
-                  <Badge bg={STATUS_VARIANT[t.status] || 'secondary'}>
-                    {STATUS_LABEL[t.status] || t.status}
-                  </Badge>
+                  <StatusChip status={t.status} label={STATUS_LABEL[t.status] || t.status} />
+                  <div className="mt-1">
+                    <MiniStepper status={t.status} />
+                  </div>
                 </td>
                 <td className="small">{unitLabel(t.blood_unit_id)}</td>
                 <td className="small">{centerName(t.source_center_id)}</td>
@@ -190,15 +209,9 @@ export default function TransfersPage() {
                 <td className="small">{new Date(t.updated_at).toLocaleString('vi-VN')}</td>
               </tr>
             ))}
-            {!list.length && (
-              <tr>
-                <td colSpan={6} className="text-secondary text-center py-4">
-                  Chưa có điều chuyển. Tạo đề xuất từ Matching.
-                </td>
-              </tr>
-            )}
           </tbody>
         </Table>
+        )}
       </div>
 
       <Modal show={!!selected} onHide={() => setSelected(null)} size="lg">

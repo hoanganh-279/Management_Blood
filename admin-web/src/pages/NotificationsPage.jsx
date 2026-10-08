@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap'
 import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import EmptyState from '../components/EmptyState'
 import InlineFieldError from '../components/InlineFieldError'
 import { useConfirm } from '../hooks/useConfirm'
 import { useFormDraft } from '../hooks/useFormDraft'
@@ -84,7 +85,7 @@ export default function NotificationsPage() {
 
   return (
     <div>
-      <div className="d-flex justify-content-between mb-3">
+      <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
         <div>
           <h1 className="h3 mb-1">Thông báo nội bộ</h1>
           <p className="text-secondary mb-0">Đề xuất / hoàn thành điều chuyển · stub DB</p>
@@ -122,8 +123,12 @@ export default function NotificationsPage() {
             ))}
             {!list.length && (
               <tr>
-                <td colSpan={6} className="text-center text-secondary py-4">
-                  Chưa có thông báo
+                <td colSpan={6} className="p-0">
+                  <EmptyState
+                    icon="bell"
+                    title="Chưa có thông báo"
+                    hint="Thông báo tự sinh khi có đề xuất hoặc hoàn tất điều chuyển."
+                  />
                 </td>
               </tr>
             )}

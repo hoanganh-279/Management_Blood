@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { Alert, Button, Col, Form, Row, Spinner, Table } from 'react-bootstrap'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../api/client'
+import DssNote from '../components/DssNote'
+import KpiCard from '../components/KpiCard'
+import ScoreStack, { ScoreLegend, SCORE_PARTS } from '../components/ScoreStack'
 import { useConfirm } from '../hooks/useConfirm'
 
 export default function MatchingPage() {
@@ -155,10 +158,10 @@ export default function MatchingPage() {
   return (
     <div>
       <h1 className="h3 mb-1">Matching cơ sở nguồn (DSS)</h1>
-      <Alert variant="danger" className="py-2">
+      <DssNote>
         Kết quả DSS chỉ hỗ trợ quyết định — không thay thẩm quyền chuyên môn hay pháp lý. Nút dưới chỉ{' '}
         <strong>đề xuất</strong> điều chuyển (chưa fulfill).
-      </Alert>
+      </DssNote>
       {feedback && (
         <Alert variant={feedback.type} dismissible onClose={() => setFeedback(null)}>
           {feedback.text}{' '}
@@ -192,24 +195,21 @@ export default function MatchingPage() {
       {req && (
         <Row className="g-3 mb-3">
           <Col md={4}>
-            <div className="kpi-card">
-              <div className="label">Nhóm mục tiêu</div>
-              <div className="value text-danger">{req.blood_type}</div>
-            </div>
+            <KpiCard icon="droplet" tone="danger" label="Nhóm mục tiêu" value={req.blood_type} />
           </Col>
           <Col md={4}>
-            <div className="kpi-card">
-              <div className="label">Thiếu / Cần</div>
-              <div className="value">
-                {Math.max(0, req.qty_needed - req.qty_fulfilled)}/{req.qty_needed}
-              </div>
-            </div>
+            <KpiCard
+              icon="alert"
+              label="Thiếu / Cần"
+              value={`${Math.max(0, req.qty_needed - req.qty_fulfilled)}/${req.qty_needed}`}
+            />
           </Col>
           <Col md={4}>
-            <div className="kpi-card">
-              <div className="label">Hạn</div>
-              <div className="value fs-5">{new Date(req.deadline).toLocaleString('vi-VN')}</div>
-            </div>
+            <KpiCard
+              icon="clock"
+              label="Hạn"
+              value={<span className="fs-5">{new Date(req.deadline).toLocaleString('vi-VN')}</span>}
+            />
           </Col>
         </Row>
       )}
@@ -229,7 +229,9 @@ export default function MatchingPage() {
                     <th>Loại</th>
                     <th>Tồn sẵn</th>
                     <th>Khoảng cách</th>
-                    <th>Điểm</th>
+                    <th style={{ minWidth: 150 }}>
+                      Điểm <ScoreLegend />
+                    </th>
                     <th></th>
                   </tr>
                 </thead>
@@ -246,7 +248,10 @@ export default function MatchingPage() {
                       <td>{c.facility_type}</td>
                       <td>{c.available_units}</td>
                       <td>{c.distance_km} km</td>
-                      <td className="fw-bold text-danger">{c.score}</td>
+                      <td>
+                        <div className="fw-bold text-danger lh-1 mb-1">{c.score}</div>
+                        <ScoreStack components={c.components} height={8} />
+                      </td>
                       <td>
                         <Button
                           size="sm"
@@ -271,7 +276,9 @@ export default function MatchingPage() {
               <div className="table-panel p-3">
                 <div className="label">Tổng điểm DSS</div>
                 <div className="display-5 text-danger fw-bold">{selected.score}</div>
-                <p className="small mb-1">{selected.center_name}</p>
+                <p className="small mb-2">{selected.center_name}</p>
+                <ScoreStack components={selected.components} height={12} />
+                <div className="mb-3" />
                 <p className="small text-secondary">
                   B=tồn đúng nhóm · D=khoảng cách · T=hạn dùng · A=dư an toàn · R=lịch sử transfer
                   (heuristic — không theo BYT)
@@ -287,7 +294,12 @@ export default function MatchingPage() {
                         </span>
                       </div>
                       <div className="score-bar">
-                        <span style={{ width: `${(v / max) * 100}%` }} />
+                        <span
+                          style={{
+                            width: `${(v / max) * 100}%`,
+                            background: SCORE_PARTS.find((p) => p.key === k)?.color,
+                          }}
+                        />
                       </div>
                     </div>
                   )

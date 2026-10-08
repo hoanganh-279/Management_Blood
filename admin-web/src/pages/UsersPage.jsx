@@ -101,7 +101,7 @@ export default function UsersPage() {
 
   return (
     <div>
-      <div className="d-flex justify-content-between mb-3">
+      <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
         <div>
           <h1 className="h3 mb-1">Người dùng & ma trận RBAC</h1>
           <p className="text-secondary mb-0">admin · staff_hospital · staff_bank</p>
@@ -117,22 +117,22 @@ export default function UsersPage() {
         </Alert>
       )}
 
-      <div className="d-flex gap-3 mb-3 flex-wrap">
+      <div className="user-kpi-grid mb-3">
         <div className="kpi-card">
           <div className="label">Tổng TK</div>
-          <div className="value fs-4">{counts.total}</div>
+          <div className="value">{counts.total}</div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card kpi-tone-danger">
           <div className="label">Admin</div>
-          <div className="value fs-4">{counts.admin}</div>
+          <div className="value">{counts.admin}</div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card kpi-tone-warn">
           <div className="label">staff_bank</div>
-          <div className="value fs-4">{counts.bank}</div>
+          <div className="value">{counts.bank}</div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card kpi-tone-safe">
           <div className="label">staff_hospital</div>
-          <div className="value fs-4">{counts.hospital}</div>
+          <div className="value">{counts.hospital}</div>
         </div>
       </div>
 

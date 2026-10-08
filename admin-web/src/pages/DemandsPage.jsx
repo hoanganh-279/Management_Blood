@@ -90,7 +90,7 @@ export default function DemandsPage() {
 
   return (
     <div>
-      <div className="d-flex justify-content-between mb-3">
+      <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
         <div>
           <h1 className="h3 mb-1">Nhu cầu / yêu cầu cấp máu</h1>
           <p className="text-secondary mb-0">FR07 — đầu vào vòng DSS</p>

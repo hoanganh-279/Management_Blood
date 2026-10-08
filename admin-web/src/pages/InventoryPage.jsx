@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Alert, Badge, Button, Col, Form, Row, Spinner, Table } from 'react-bootstrap'
+import { Alert, Badge, Button, Col, Form, Row, Table } from 'react-bootstrap'
+import PageSkeleton from '../components/PageSkeleton'
 import { Link, useSearchParams } from 'react-router-dom'
 import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
@@ -44,7 +45,7 @@ export default function InventoryPage() {
     setBloodType((prev) => (prev === t ? '' : t))
   }
 
-  if (loading) return <Spinner />
+  if (loading) return <PageSkeleton />
 
   return (
     <div>
@@ -76,11 +77,11 @@ export default function InventoryPage() {
         <div className="alert-banner">Cảnh báo gần hết hạn &lt;{params.get('expiring')}h — lọc đang bật</div>
       )}
 
-      <Row className="g-2 mb-3">
+      <Row className="g-3 mb-3">
         {byType.map((x) => {
           const active = bloodType === x.t
           return (
-            <Col key={x.t} xs={6} md={3} lg>
+            <Col key={x.t} xs={6} md={3}>
               <button
                 type="button"
                 className={`kpi-card kpi-filter text-start w-100 ${x.critical ? 'border-danger' : ''} ${active ? 'is-active' : ''}`}
@@ -107,7 +108,7 @@ export default function InventoryPage() {
       </Form.Select>
 
       <div className="table-panel">
-        <Table hover size="sm" className="mb-0">
+        <Table hover size="sm" responsive className="mb-0 text-nowrap">
           <thead>
             <tr>
               <th>Barcode</th>
