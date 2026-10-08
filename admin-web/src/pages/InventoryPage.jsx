@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Alert, Badge, Button, Col, Form, Row, Spinner, Table } from 'react-bootstrap'
+import { Alert, Badge, Button, Col, Form, Row, Table } from 'react-bootstrap'
+import PageSkeleton from '../components/PageSkeleton'
 import { Link, useSearchParams } from 'react-router-dom'
 import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
@@ -44,7 +45,7 @@ export default function InventoryPage() {
     setBloodType((prev) => (prev === t ? '' : t))
   }
 
-  if (loading) return <Spinner />
+  if (loading) return <PageSkeleton />
 
   return (
     <div>

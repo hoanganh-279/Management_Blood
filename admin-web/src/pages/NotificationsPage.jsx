@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap'
 import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import EmptyState from '../components/EmptyState'
 import InlineFieldError from '../components/InlineFieldError'
 import { useConfirm } from '../hooks/useConfirm'
 import { useFormDraft } from '../hooks/useFormDraft'
@@ -122,8 +123,12 @@ export default function NotificationsPage() {
             ))}
             {!list.length && (
               <tr>
-                <td colSpan={6} className="text-center text-secondary py-4">
-                  Chưa có thông báo
+                <td colSpan={6} className="p-0">
+                  <EmptyState
+                    icon="bell"
+                    title="Chưa có thông báo"
+                    hint="Thông báo tự sinh khi có đề xuất hoặc hoàn tất điều chuyển."
+                  />
                 </td>
               </tr>
             )}

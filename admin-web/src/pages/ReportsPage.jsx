@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Col, Row, Spinner } from 'react-bootstrap'
+import { Col, Row } from 'react-bootstrap'
+import PageSkeleton from '../components/PageSkeleton'
 import {
   Bar,
   BarChart,
@@ -23,7 +24,7 @@ export default function ReportsPage() {
     api.get('/reports/kpis').then((r) => setKpi(r.data))
   }, [])
 
-  if (!kpi) return <Spinner />
+  if (!kpi) return <PageSkeleton />
 
   const bloodData = Object.entries(kpi.by_blood_type || {}).map(([name, value]) => ({
     name,

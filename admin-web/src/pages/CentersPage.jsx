@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Alert, Badge, Button, Form, Spinner, Table } from 'react-bootstrap'
+import { Alert, Badge, Button, Form, Table } from 'react-bootstrap'
+import PageSkeleton from '../components/PageSkeleton'
 import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import { useConfirm } from '../hooks/useConfirm'
@@ -66,7 +67,7 @@ export default function CentersPage() {
     }
   }
 
-  if (loading) return <Spinner />
+  if (loading) return <PageSkeleton />
 
   return (
     <div>
