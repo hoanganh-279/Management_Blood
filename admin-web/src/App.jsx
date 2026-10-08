@@ -6,6 +6,8 @@ import DashboardPage from './pages/DashboardPage'
 import AlertsPage from './pages/AlertsPage'
 import MatchingPage from './pages/MatchingPage'
 import TransfersPage from './pages/TransfersPage'
+import TransferDetailPage from './pages/TransferDetailPage'
+import AuditLogsPage from './pages/AuditLogsPage'
 import NotificationsPage from './pages/NotificationsPage'
 import InventoryPage from './pages/InventoryPage'
 import DemandsPage from './pages/DemandsPage'
@@ -45,11 +47,13 @@ export default function App() {
                   <Route path="demands" element={<DemandsPage />} />
                   <Route path="centers" element={<CentersPage />} />
                   <Route path="transfers" element={<TransfersPage />} />
+                  <Route path="transfers/:id" element={<TransferDetailPage />} />
                   <Route path="reports" element={<ReportsPage />} />
                   <Route path="notifications" element={<NotificationsPage />} />
                   <Route element={<RequireRoles roles={['admin']} />}>
                     <Route path="matching" element={<MatchingPage />} />
                     <Route path="system/users" element={<UsersPage />} />
+                    <Route path="system/audit" element={<AuditLogsPage />} />
                   </Route>
                 </Route>
               </Route>

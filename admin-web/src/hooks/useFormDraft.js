@@ -2,14 +2,19 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 /**
  * Auto-save form draft to localStorage while the form is open.
+ * `exclude` lists keys that must never be persisted (e.g. passwords).
  */
-export function useFormDraft(key, initialValue, { enabled = true, debounceMs = 400 } = {}) {
+export function useFormDraft(key, initialValue, { enabled = true, debounceMs = 400, exclude = [] } = {}) {
   const storageKey = `mb-draft:${key}`
   const [value, setValue] = useState(() => {
     if (!enabled || typeof window === 'undefined') return initialValue
     try {
       const raw = localStorage.getItem(storageKey)
-      if (raw) return { ...initialValue, ...JSON.parse(raw) }
+      if (raw) {
+        const saved = JSON.parse(raw)
+        exclude.forEach((k) => delete saved[k])
+        return { ...initialValue, ...saved }
+      }
     } catch {
       /* ignore */
     }
@@ -21,7 +26,9 @@ export function useFormDraft(key, initialValue, { enabled = true, debounceMs = 4
     if (!enabled) return undefined
     timer.current = window.setTimeout(() => {
       try {
-        localStorage.setItem(storageKey, JSON.stringify(value))
+        const toSave = { ...value }
+        exclude.forEach((k) => delete toSave[k])
+        localStorage.setItem(storageKey, JSON.stringify(toSave))
       } catch {
         /* ignore quota */
       }
@@ -29,6 +36,7 @@ export function useFormDraft(key, initialValue, { enabled = true, debounceMs = 4
     return () => {
       if (timer.current) window.clearTimeout(timer.current)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, storageKey, enabled, debounceMs])
 
   const clearDraft = useCallback(() => {

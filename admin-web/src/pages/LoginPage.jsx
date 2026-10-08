@@ -3,12 +3,13 @@ import { Alert, Button, Form, Spinner } from 'react-bootstrap'
 import { Navigate, useNavigate } from 'react-router-dom'
 import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import logoFull from '../assets/logo-full.png'
 
 export default function LoginPage() {
   const { login, loginWithGoogle, user, loading } = useAuth()
   const navigate = useNavigate()
-  const [email, setEmail] = useState('tanhoanganh2006a@gmail.com')
-  const [password, setPassword] = useState('Admin@123')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [showPw, setShowPw] = useState(false)
@@ -130,6 +131,7 @@ export default function LoginPage() {
       </div>
       <div className="login-form-wrap">
         <div className="login-card">
+          <img src={logoFull} alt="Management Blood" className="login-logo mb-4" />
           <div className="text-danger small mb-2">• Hệ thống nội bộ</div>
           <h2 className="h3 mb-1">Đăng nhập</h2>
           <p className="text-secondary mb-4">
@@ -141,10 +143,11 @@ export default function LoginPage() {
             </Alert>
           )}
           <Form onSubmit={onSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label>Email / tên đăng nhập *</Form.Label>
+            <Form.Group className="mb-3" controlId="login-email">
+              <Form.Label>Email *</Form.Label>
               <Form.Control
                 type="email"
+                autoComplete="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -152,13 +155,12 @@ export default function LoginPage() {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Mật khẩu *</Form.Label>
+              <Form.Label htmlFor="login-password">Mật khẩu *</Form.Label>
               <InputPassword value={password} onChange={setPassword} show={showPw} setShow={setShowPw} disabled={submitting} />
             </Form.Group>
-            <div className="d-flex justify-content-between mb-3">
-              <Form.Check type="checkbox" label="Ghi nhớ đăng nhập" defaultChecked />
-              <span className="text-danger small">Quên mật khẩu?</span>
-            </div>
+            <p className="text-secondary small mb-3">
+              Quên mật khẩu? Liên hệ quản trị viên hệ thống để được cấp lại.
+            </p>
             <Button type="submit" className="w-100 btn-emergency" disabled={submitting}>
               {submitting ? <Spinner size="sm" /> : 'Đăng nhập'}
             </Button>
@@ -208,7 +210,9 @@ function InputPassword({ value, onChange, show, setShow, disabled }) {
   return (
     <div className="input-group">
       <input
+        id="login-password"
         className="form-control"
+        autoComplete="current-password"
         type={show ? 'text' : 'password'}
         value={value}
         onChange={(e) => onChange(e.target.value)}

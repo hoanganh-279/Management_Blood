@@ -4,6 +4,8 @@ import { Badge, Button } from 'react-bootstrap'
 import { useAuth } from '../auth/AuthContext'
 import UserMenu from '../components/UserMenu'
 import { useHotkeys } from '../hooks/useHotkeys'
+import logoIcon from '../assets/logo-icon.png'
+import { ROLE_LABEL, label } from '../utils/labels'
 
 const STAFF = ['admin', 'staff_hospital', 'staff_bank']
 
@@ -35,7 +37,10 @@ const NAV = [
   },
   {
     section: 'HỆ THỐNG',
-    items: [{ to: '/system/users', label: 'Người dùng & RBAC', roles: ['admin'] }],
+    items: [
+      { to: '/system/users', label: 'Người dùng & RBAC', roles: ['admin'] },
+      { to: '/system/audit', label: 'Nhật ký thao tác', roles: ['admin'] },
+    ],
   },
 ]
 
@@ -67,11 +72,13 @@ export default function AppLayout() {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="sidebar-brand">
-          <span className="logo">+</span>
-          <strong>Management Blood</strong>
+          <div className="sidebar-brand-row">
+            <img src={logoIcon} alt="Management Blood" className="logo" />
+            <strong>Management Blood</strong>
+          </div>
           <div className="small text-secondary mt-1">DSS Điều phối BV ↔ NHM</div>
           <Badge bg="secondary" className="mt-2">
-            {user?.role}
+            {label(ROLE_LABEL, user?.role)}
           </Badge>
         </div>
         <nav className="flex-grow-1 overflow-auto">
@@ -121,8 +128,9 @@ export default function AppLayout() {
             size="sm"
             className="btn-emergency"
             onClick={() => navigate('/alerts?severity=critical')}
+            title="Xem các cảnh báo thiếu máu nghiêm trọng"
           >
-            Khẩn cấp
+            Cảnh báo nghiêm trọng
           </Button>
           {hasRole('admin', 'staff_hospital') && (
             <Button size="sm" variant="outline-danger" onClick={() => navigate('/demands')}>

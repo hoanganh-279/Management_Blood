@@ -47,8 +47,14 @@ description: >-
 - Công thức Shortage / Coverage / Score: **chỉ copy** từ Product §5 — không bịa, không gắn “theo BYT”.
 - Matching lọc nguồn `allowed_to_supply_others = true`.
 - Transfer: `proposed → source_confirmed → exported → in_transit → inbound_pending → received|rejected|cancelled`.
-- `qty_fulfilled` + refresh alerts **chỉ khi** `received`.
-- Checklist VC (Điều 20) và nhập (Điều 40) bắt buộc trước các bước tương ứng — ghi nhận, không IoT MVP.
+  - `transit` dừng ở `in_transit`; đích gọi `/arrive` để sang `inbound_pending`.
+  - `reject`: chỉ đích/admin, từ `in_transit`|`inbound_pending` → unit `quarantine` tại nguồn → `POST /inventory/units/{id}/quarantine-review`.
+  - `cancel`: chỉ nguồn/admin, từ `proposed`|`source_confirmed`.
+- Đề xuất: khớp chặt nhóm + chế phẩm, còn hạn, không vượt số lượng còn thiếu, một đơn vị một điều chuyển mở; không HĐ → lý do lãnh đạo.
+- `qty_fulfilled` + refresh alerts **chỉ khi** `received`; `PATCH /demands` chỉ hủy kèm lý do.
+- Checklist VC (Điều 20: dải nhiệt khóa theo chế phẩm) và nhập (Điều 40) bắt buộc trước các bước tương ứng — ghi nhận, không IoT MVP.
+- Thao tác nhạy cảm ngoài lifecycle ghi `audit_logs` qua `app/services/audit.py`.
+- Chạy `backend/tests` (pytest) sau mọi thay đổi lifecycle / RBAC / kho.
 
 ## Cấm
 
@@ -59,4 +65,3 @@ description: >-
 - Thêm ML forecasting khi chưa có baseline và dữ liệu đủ.
 - Nhân đôi logic matching trên React thay vì backend.
 - Tự hành động thay đổi lớn hoặc đoán nghiệp vụ khi chưa hỏi.
-- Đưa donor / TT 04 vào MVP khi Product chưa đổi scope.

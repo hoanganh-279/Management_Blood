@@ -32,6 +32,6 @@ Tham chiếu: Jakob Nielsen heuristics, Figma UI Design Principles. Ánh xạ: *
 | **M — Minor** | Áp dụng ngay + toast Undo ~6s | Đánh dấu cảnh báo `processing` |
 | **V — Validate** | Disable CTA + lỗi inline | qty/deadline/email; checklist thiếu mục bắt buộc |
 
-Checklist Điều 20/40: tick sẵn được phép + **bắt buộc** ConfirmModal với câu xác nhận đã đối chiếu thực tế. OTP/ký số: production sau — không UI giả.
+Checklist Điều 20/40: tick sẵn được phép + **bắt buộc** ConfirmModal với câu xác nhận đã đối chiếu thực tế. ConfirmModal **không** xác nhận bằng Enter; lý do bắt buộc ≥ 3 ký tự. Trang chi tiết điều chuyển: **một CTA chính** theo vai trò + trạng thái. Mọi trang: trạng thái tải / lỗi / rỗng; nhãn tiếng Việt dùng chung `utils/labels.js`. OTP/ký số: production sau — không UI giả.
 
 Giữ Bootstrap; không phá quy ước màu cảnh báo.

@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Alert, Button, Form, Modal, Spinner, Table } from 'react-bootstrap'
 import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
 import InlineFieldError from '../components/InlineFieldError'
+import LoadState from '../components/LoadState'
+import { apiError } from '../utils/labels'
 import { useConfirm } from '../hooks/useConfirm'
 import { useFormDraft } from '../hooks/useFormDraft'
 import { validateRequired } from '../utils/validators'
@@ -29,15 +31,28 @@ export default function NotificationsPage() {
   const [msg, setMsg] = useState('')
   const [touched, setTouched] = useState({})
 
-  function load() {
-    api.get('/notifications').then((r) => setList(r.data))
-  }
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const load = useCallback(() => {
+    setLoading(true)
+    setError('')
+    Promise.all([api.get('/notifications'), api.get('/demands'), api.get('/centers')])
+      .then(([n, d, c]) => {
+        setList(n.data)
+        setDemands(d.data)
+        setCenters(c.data)
+      })
+      .catch((err) => setError(apiError(err, 'Không tải được thông báo.')))
+      .finally(() => setLoading(false))
+  }, [])
 
   useEffect(() => {
     load()
-    api.get('/demands').then((r) => setDemands(r.data))
-    api.get('/centers').then((r) => setCenters(r.data))
-  }, [])
+  }, [load])
+
+  const centerName = (id) => centers.find((c) => c.id === id)?.name || id || '—'
+  const demandCode = (id) => demands.find((d) => d.id === id)?.code || id || '—'
 
   const bodyError = validateRequired(form.body, 'Nội dung')
   const canSend = !bodyError
@@ -46,18 +61,21 @@ export default function NotificationsPage() {
     setTouched({ body: true })
     if (!canSend) return
 
-    const centerName = centers.find((c) => c.id === form.center_id)?.name || '—'
+    setShow(false)
     const ok = await confirm({
       title: 'Xác nhận gửi thông báo nội bộ',
       summary: [
-        { label: 'Cơ sở nhận', value: centerName },
+        { label: 'Cơ sở nhận', value: form.center_id ? centerName(form.center_id) : 'Tất cả (không chỉ định)' },
         { label: 'Tiêu đề', value: form.template },
         { label: 'Nội dung', value: (form.body || '').slice(0, 120) },
       ],
       confirmLabel: 'Gửi',
-      confirmVariant: 'danger',
+      confirmVariant: 'primary',
     })
-    if (!ok) return
+    if (!ok) {
+      setShow(true)
+      return
+    }
 
     setSaving(true)
     setMsg('')
@@ -69,14 +87,14 @@ export default function NotificationsPage() {
         template: form.template,
         body: form.body,
       })
-      setShow(false)
       clearDraft()
       reset(NOTIF_DRAFT)
       setTouched({})
-      setMsg('Đã ghi thông báo nội bộ (stub kênh).')
+      setMsg({ type: 'success', text: 'Đã ghi thông báo nội bộ (kênh gửi là stub).' })
       load()
     } catch (e) {
-      setMsg(e.response?.data?.detail || 'Gửi thất bại')
+      setMsg({ type: 'danger', text: apiError(e, 'Gửi thất bại.') })
+      setShow(true)
     } finally {
       setSaving(false)
     }
@@ -87,17 +105,20 @@ export default function NotificationsPage() {
       <div className="d-flex justify-content-between mb-3">
         <div>
           <h1 className="h3 mb-1">Thông báo nội bộ</h1>
-          <p className="text-secondary mb-0">Đề xuất / hoàn thành điều chuyển · stub DB</p>
+          <p className="text-secondary mb-0">Sự kiện điều chuyển và thông báo điều phối (kênh gửi là stub).</p>
         </div>
         {hasRole('admin', 'staff_bank') && (
-          <Button className="btn-emergency" onClick={() => setShow(true)}>
-            Soạn thông báo
-          </Button>
+          <Button onClick={() => setShow(true)}>Soạn thông báo</Button>
         )}
       </div>
-      {msg && <Alert variant="info">{msg}</Alert>}
+      {msg && (
+        <Alert variant={msg.type} dismissible onClose={() => setMsg('')}>
+          {msg.text}
+        </Alert>
+      )}
 
       <div className="table-panel">
+        <LoadState loading={loading} error={error} onRetry={load} empty={!list.length} emptyText="Chưa có thông báo.">
         <Table hover size="sm" className="mb-0">
           <thead>
             <tr>
@@ -113,22 +134,16 @@ export default function NotificationsPage() {
             {list.map((n) => (
               <tr key={n.id}>
                 <td className="small">{new Date(n.created_at).toLocaleString('vi-VN')}</td>
-                <td className="small">{n.center_id || '—'}</td>
-                <td className="small">{n.request_id || '—'}</td>
+                <td className="small">{centerName(n.center_id)}</td>
+                <td className="small">{demandCode(n.request_id)}</td>
                 <td>{n.template}</td>
-                <td>{n.status}</td>
-                <td className="small">{(n.body || '').slice(0, 80)}</td>
+                <td className="small">{n.status === 'sent' ? 'Đã gửi' : n.status}</td>
+                <td className="small">{n.body}</td>
               </tr>
             ))}
-            {!list.length && (
-              <tr>
-                <td colSpan={6} className="text-center text-secondary py-4">
-                  Chưa có thông báo
-                </td>
-              </tr>
-            )}
           </tbody>
         </Table>
+        </LoadState>
       </div>
 
       <Modal show={show} onHide={() => setShow(false)}>
@@ -137,7 +152,7 @@ export default function NotificationsPage() {
         </Modal.Header>
         <Modal.Body>
           <p className="small text-secondary">Bản nháp được lưu tự động trên trình duyệt.</p>
-          <Form.Group className="mb-2">
+          <Form.Group className="mb-2" controlId="nt-center">
             <Form.Label>Cơ sở nhận</Form.Label>
             <Form.Select
               value={form.center_id}
@@ -151,7 +166,7 @@ export default function NotificationsPage() {
               ))}
             </Form.Select>
           </Form.Group>
-          <Form.Group className="mb-2">
+          <Form.Group className="mb-2" controlId="nt-request">
             <Form.Label>Gắn nhu cầu</Form.Label>
             <Form.Select
               value={form.request_id}
@@ -165,15 +180,15 @@ export default function NotificationsPage() {
               ))}
             </Form.Select>
           </Form.Group>
-          <Form.Group className="mb-2">
+          <Form.Group className="mb-2" controlId="nt-title">
             <Form.Label>Tiêu đề</Form.Label>
             <Form.Control
               value={form.template}
               onChange={(e) => setForm({ ...form, template: e.target.value })}
             />
           </Form.Group>
-          <Form.Group>
-            <Form.Label>Nội dung</Form.Label>
+          <Form.Group controlId="nt-body">
+            <Form.Label>Nội dung *</Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
@@ -189,7 +204,7 @@ export default function NotificationsPage() {
           <Button variant="secondary" onClick={() => setShow(false)}>
             Hủy
           </Button>
-          <Button className="btn-emergency" disabled={!canSend || saving} onClick={send}>
+          <Button disabled={!canSend || saving} onClick={send}>
             {saving ? <Spinner size="sm" /> : 'Gửi'}
           </Button>
         </Modal.Footer>

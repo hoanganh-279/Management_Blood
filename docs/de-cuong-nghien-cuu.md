@@ -21,7 +21,6 @@ Hệ thống **đề xuất và hỗ trợ theo dõi** — không tự động c
 
 ### Hệ thống không làm gì?
 
-- Không phải ứng dụng đăng ký / đặt lịch / huy động người hiến máu.
 - Không thay thế toàn bộ phần mềm bệnh viện (HIS/LIS).
 - Không thay hợp đồng cung cấp máu hay thẩm quyền cấp phép của cơ quan quản lý.
 - Không “chuyển tồn kho ảo” từ cơ sở A sang B trong một bước mà bỏ qua xác nhận và đối chiếu thực tế.
@@ -69,7 +68,7 @@ Máu là nguồn lực khan hiếm, có hạn dùng, phân bố không đều th
 2. Khó **tìm cơ sở nguồn** có dư tồn phù hợp để điều chuyển.
 3. Nhu cầu, tồn kho và điều chuyển thường **phân mảnh**, thiếu vòng khép kín có xác nhận và đối chiếu.
 
-Đề tài hướng tới lớp DSS **cấp cơ sở** (bệnh viện ↔ ngân hàng máu), khác với ứng dụng tập trung đăng ký hay đặt lịch hiến máu.
+Đề tài hướng tới lớp DSS **cấp cơ sở** (bệnh viện ↔ ngân hàng máu).
 
 ### 1.2. Khái niệm cần nghiên cứu
 
@@ -84,13 +83,9 @@ Máu là nguồn lực khan hiếm, có hạn dùng, phân bố không đều th
 
 ### 1.3. Nghiên cứu và giải pháp liên quan
 
-**Tại Việt Nam**, ứng dụng Hiến máu của Viện Huyết học – Truyền máu Trung ương hỗ trợ đăng ký, đặt lịch, tìm điểm hiến, lịch sử hiến… Vì vậy chức năng quản lý người hiến / đặt lịch **không** phải tính mới của đề tài này và **nằm ngoài phạm vi** giai đoạn đầu.
+**Tại Việt Nam**, phần mềm quản lý ngân hàng máu trên thị trường (ví dụ các hệ thống kiểu quản lý kho – cấp phát tại một cơ sở) mạnh về vận hành nội bộ, nhưng khoảng trống thường gặp là **lớp hỗ trợ điều phối liên cơ sở**: xếp hạng nguồn, đề xuất, theo dõi giao nhận có xác nhận hai phía và đối chiếu nhập.
 
-Phần mềm quản lý ngân hàng máu trên thị trường (ví dụ các hệ thống kiểu quản lý kho – hiến – cấp phát tại một cơ sở) mạnh về vận hành nội bộ, nhưng khoảng trống thường gặp là **lớp hỗ trợ điều phối liên cơ sở**: xếp hạng nguồn, đề xuất, theo dõi giao nhận có xác nhận hai phía và đối chiếu nhập.
-
-**Trên thế giới**, nhiều nghiên cứu về quản lý tồn kho máu, dự báo nhu cầu, tối ưu chuỗi cung ứng và phân phối giữa điểm cung–cầu. “Matching” trong tài liệu quốc tế thường gắn người hiến–người nhận hoặc lịch hẹn — khác bài toán **xếp hạng cơ sở nguồn** của đề tài.
-
-Tuyên bố “kết nối người hiến bằng trí tuệ nhân tạo” đơn thuần **không đủ** để tạo tính mới. Tính mới cần chứng minh ở điều phối cơ sở nguồn, vòng giao nhận khép kín và đánh giá bằng chỉ số vận hành.
+**Trên thế giới**, nhiều nghiên cứu về quản lý tồn kho máu, dự báo nhu cầu, tối ưu chuỗi cung ứng và phân phối giữa điểm cung–cầu.
 
 ### 1.4. Khoảng trống nghiên cứu (giả thuyết cần kiểm chứng)
 
@@ -180,7 +175,7 @@ Khảo sát chính: **Thông tư 26/2013/TT-BYT** về hoạt động truyền m
 | Tuân thủ quy trình | Các bước giao nhận, checklist vận chuyển / nhập, nhật ký, cờ “được phép cung cấp cho nơi khác” | Chỉ ánh xạ *tinh thần* quy trình — không mô phỏng cấp phép |
 | Thuật toán DSS | Shortage, Coverage, điểm B/D/T/A/R | **Không** — heuristic nghiên cứu |
 
-Không viết như thể đã có “Luật hiến máu nhân đạo” riêng cho điều phối liên bệnh viện. Các văn bản tập trung vận động / điều kiện cơ sở hiến máu **ngoài trọng tâm** giai đoạn đầu của đề tài này.
+Không viết như thể đã có “Luật hiến máu nhân đạo” riêng cho điều phối liên bệnh viện.
 
 Hệ thống **không** thay thế quyết định chuyên môn, hợp đồng cung cấp máu, hay thẩm quyền cấp phép của cơ quan quản lý.
 
@@ -216,7 +211,7 @@ Ba vai trò: nhân viên bệnh viện, nhân viên ngân hàng máu (kho nguồ
 | Thông báo nội bộ | Báo nhân viên về đề xuất, từng bước điều chuyển, hoàn thành | Có |
 | Báo cáo | Tồn kho, nhu cầu, điều chuyển, hiệu quả điều phối | Có |
 
-**Ngoài giai đoạn đầu:** module người hiến / điểm hiến / đặt lịch hiến; thay thế đầy đủ HIS/LIS; xác thực OTP / chữ ký số (hướng sản xuất sau).
+**Ngoài giai đoạn đầu:** thay thế đầy đủ HIS/LIS; xác thực OTP / chữ ký số (hướng sản xuất sau).
 
 ### 2.4. Yêu cầu phi chức năng (tóm tắt)
 
@@ -263,7 +258,7 @@ Ba vai trò: nhân viên bệnh viện, nhân viên ngân hàng máu (kho nguồ
 ### 3.4. Nguyên tắc
 
 - Không thu thập dữ liệu cá nhân / y tế ngoài mục tiêu nghiên cứu và vận hành hệ thống.
-- Không dùng dữ liệu bệnh nhân / người hiến thật khi chưa có quyền và biện pháp bảo vệ phù hợp.
+- Không dùng dữ liệu bệnh nhân thật khi chưa có quyền và biện pháp bảo vệ phù hợp.
 - Ghi nguồn, thời gian, giấy phép và chất lượng từng bộ dữ liệu.
 - Có từ điển dữ liệu (mô tả từng loại thông tin bằng lời nghiệp vụ).
 
@@ -307,10 +302,9 @@ Ba vai trò: nhân viên bệnh viện, nhân viên ngân hàng máu (kho nguồ
 ## 7. NGUỒN THAM KHẢO BAN ĐẦU
 
 1. Bộ Y tế. Thông tư 26/2013/TT-BYT quy định hướng dẫn hoạt động truyền máu.
-2. Viện Huyết học – Truyền máu Trung ương — thông tin ứng dụng Hiến máu và quy trình liên quan (đối chứng phạm vi người hiến — ngoài tính mới đề tài).
-3. Các sản phẩm / giới thiệu phần mềm quản lý ngân hàng máu trên thị trường Việt Nam (đối chứng chức năng kho / vận hành tại một cơ sở).
-4. Nghiên cứu quốc tế về quản lý tồn kho máu, dự báo nhu cầu máu, tối ưu chuỗi cung ứng / phân phối máu, hỗ trợ quyết định trong logistics y tế.
-5. Cổng thông tin văn bản pháp luật chính thức để đối chiếu toàn văn khi khảo sát chính thức.
+2. Các sản phẩm / giới thiệu phần mềm quản lý ngân hàng máu trên thị trường Việt Nam (đối chứng chức năng kho / vận hành tại một cơ sở).
+3. Nghiên cứu quốc tế về quản lý tồn kho máu, dự báo nhu cầu máu, tối ưu chuỗi cung ứng / phân phối máu, hỗ trợ quyết định trong logistics y tế.
+4. Cổng thông tin văn bản pháp luật chính thức để đối chiếu toàn văn khi khảo sát chính thức.
 
 *(Danh mục sẽ bổ sung trích dẫn đầy đủ trong giai đoạn tổng quan tài liệu chi tiết.)*
 
@@ -334,7 +328,7 @@ Ba vai trò: nhân viên bệnh viện, nhân viên ngân hàng máu (kho nguồ
 
 ## 9. KẾT LUẬN ĐỊNH HƯỚNG
 
-Đề tài **không** định vị là phần mềm đặt lịch hiến máu hay ứng dụng kết nối người hiến. Hướng có tiềm năng là **hỗ trợ quyết định dựa trên dữ liệu** giữa bệnh viện và ngân hàng máu: phát hiện thiếu theo nhóm máu–địa điểm–thời gian, xếp hạng cơ sở nguồn có giải thích, và theo dõi giao nhận đa bước theo tinh thần Thông tư 26/2013/TT-BYT.
+Hướng có tiềm năng của đề tài là **hỗ trợ quyết định dựa trên dữ liệu** giữa bệnh viện và ngân hàng máu: phát hiện thiếu theo nhóm máu–địa điểm–thời gian, xếp hạng cơ sở nguồn có giải thích, và theo dõi giao nhận đa bước theo tinh thần Thông tư 26/2013/TT-BYT.
 
 Giai đoạn đầu ưu tiên: (1) phát hiện thiếu hụt không gian–thời gian; (2) xếp hạng cơ sở nguồn có nhật ký; (3) gắn chúng vào quy trình điều chuyển đến khi đối chiếu nhập và cập nhật đáp ứng nhu cầu. Dự báo nhu cầu bổ sung khi đủ lịch sử. Trí tuệ nhân tạo / học máy chỉ cân nhắc sau khi có dữ liệu và phương pháp cơ sở rõ ràng — không phải mục tiêu tự thân.
 

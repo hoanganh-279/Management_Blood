@@ -26,14 +26,7 @@ npm-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Flutter (donor-app)
-donor-app/.dart_tool/
-donor-app/.packages
-donor-app/build/
-donor-app/.flutter-plugins
-donor-app/.flutter-plugins-dependencies
-donor-app/.pub-cache/
-donor-app/.pub/
+# IDE module files
 **/*.iml
 
 # Supabase local

@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
-import { Alert, Badge, Button, Form, Spinner, Table } from 'react-bootstrap'
+import { useCallback, useEffect, useState } from 'react'
+import { Alert, Badge, Button, Form, Table } from 'react-bootstrap'
 import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import LoadState from '../components/LoadState'
 import { useConfirm } from '../hooks/useConfirm'
+import { FACILITY_TYPE_LABEL, apiError, label } from '../utils/labels'
 
 export default function CentersPage() {
   const { hasRole } = useAuth()
@@ -12,17 +14,21 @@ export default function CentersPage() {
   const [feedback, setFeedback] = useState(null)
   const [saving, setSaving] = useState(null)
 
-  function load() {
+  const [error, setError] = useState('')
+
+  const load = useCallback(() => {
     setLoading(true)
+    setError('')
     api
       .get('/centers')
       .then((r) => setList(r.data))
+      .catch((err) => setError(apiError(err, 'Không tải được danh sách cơ sở.')))
       .finally(() => setLoading(false))
-  }
+  }, [])
 
   useEffect(() => {
     load()
-  }, [])
+  }, [load])
 
   async function patchFlag(center, field, value) {
     if (!hasRole('admin')) return
@@ -60,13 +66,13 @@ export default function CentersPage() {
       setList((prev) => prev.map((c) => (c.id === data.id ? data : c)))
       setFeedback({ type: 'success', text: `Đã cập nhật ${center.name}.` })
     } catch (err) {
-      setFeedback({ type: 'danger', text: err.response?.data?.detail || 'Cập nhật thất bại' })
+      setFeedback({ type: 'danger', text: apiError(err, 'Cập nhật thất bại.') })
     } finally {
       setSaving(null)
     }
   }
 
-  if (loading) return <Spinner />
+  if (loading || error) return <LoadState loading={loading} error={error} onRetry={load} />
 
   return (
     <div>
@@ -89,7 +95,7 @@ export default function CentersPage() {
               <th>Địa chỉ</th>
               <th>Được cung cấp cho CS khác</th>
               <th>Có HĐ cung cấp</th>
-              <th>Tỷ lệ transfer (R)</th>
+              <th>Tỷ lệ điều chuyển thành công (R)</th>
               <th>Tọa độ</th>
             </tr>
           </thead>
@@ -98,7 +104,9 @@ export default function CentersPage() {
               <tr key={c.id}>
                 <td>{c.name}</td>
                 <td>
-                  <Badge bg={c.facility_type === 'bank' ? 'primary' : 'secondary'}>{c.facility_type}</Badge>
+                  <Badge bg={c.facility_type === 'bank' ? 'primary' : 'secondary'}>
+                    {label(FACILITY_TYPE_LABEL, c.facility_type)}
+                  </Badge>
                 </td>
                 <td>{c.address}</td>
                 <td>

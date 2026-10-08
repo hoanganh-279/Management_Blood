@@ -35,6 +35,14 @@ class BloodUnitStatus(str, enum.Enum):
     used = "used"
     expired = "expired"
     critical = "critical"
+    quarantine = "quarantine"
+    discarded = "discarded"
+
+
+AVAILABLE_UNIT_STATUSES = (BloodUnitStatus.ready, BloodUnitStatus.critical)
+
+BLOOD_TYPES = ("O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+")
+PRODUCT_TYPES = ("PRBC", "WB", "PLT", "WBC", "FFP", "CRYO")
 
 
 class TransactionType(str, enum.Enum):
@@ -152,6 +160,8 @@ class InventoryTransaction(Base):
     blood_request_id: Mapped[str | None] = mapped_column(ForeignKey("blood_requests.id"), nullable=True)
     transfer_id: Mapped[str | None] = mapped_column(ForeignKey("blood_transfers.id"), nullable=True)
     actor_id: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    # receipt | issued | discarded | expired | transfer_out | transfer_in
+    reason: Mapped[str] = mapped_column(String(40), default="")
     note: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
@@ -168,6 +178,12 @@ class BloodTransfer(Base):
         Enum(TransferStatus), default=TransferStatus.proposed
     )
     leadership_confirmed_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    leadership_confirmed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    leadership_reason: Mapped[str] = mapped_column(Text, default="")
+    handed_over_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    carrier_name: Mapped[str] = mapped_column(String(200), default="")
+    arrived_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    received_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     transport_checklist: Mapped[dict] = mapped_column(JSON, default=dict)
     inbound_checklist: Mapped[dict] = mapped_column(JSON, default=dict)
     cancel_reason: Mapped[str] = mapped_column(Text, default="")
@@ -211,6 +227,8 @@ class BloodRequest(Base):
     status: Mapped[RequestStatus] = mapped_column(Enum(RequestStatus), default=RequestStatus.open)
     department: Mapped[str] = mapped_column(String(100), default="")
     notes: Mapped[str] = mapped_column(Text, default="")
+    cancel_reason: Mapped[str] = mapped_column(Text, default="")
+    created_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
@@ -258,3 +276,17 @@ class MatchingLog(Base):
     top_k: Mapped[int] = mapped_column(Integer, default=20)
     radius_km: Mapped[float] = mapped_column(Float, default=30.0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class AuditLog(Base):
+    """Sensitive actions outside transfer_events (inventory views, exports, matching, admin changes)."""
+
+    __tablename__ = "audit_logs"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    actor_id: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    action: Mapped[str] = mapped_column(String(80), nullable=False, index=True)
+    entity: Mapped[str] = mapped_column(String(60), default="")
+    entity_id: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    details: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)

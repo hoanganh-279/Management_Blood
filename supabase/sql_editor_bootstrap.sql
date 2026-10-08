@@ -8,7 +8,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TYPE user_role AS ENUM ('staff_hospital', 'staff_bank', 'admin');
 CREATE TYPE blood_unit_status AS ENUM (
-  'ready', 'reserved', 'transferred', 'used', 'expired', 'critical'
+  'ready', 'reserved', 'transferred', 'used', 'expired', 'critical', 'quarantine', 'discarded'
 );
 CREATE TYPE transaction_type AS ENUM ('in', 'out', 'transfer');
 CREATE TYPE request_priority AS ENUM ('normal', 'urgent', 'flash');
@@ -70,6 +70,8 @@ CREATE TABLE blood_requests (
   status request_status DEFAULT 'open',
   department TEXT DEFAULT '',
   notes TEXT DEFAULT '',
+  cancel_reason TEXT DEFAULT '',
+  created_by TEXT REFERENCES users(id),
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -82,6 +84,7 @@ CREATE TABLE inventory_transactions (
   blood_request_id TEXT REFERENCES blood_requests(id),
   transfer_id TEXT,
   actor_id TEXT REFERENCES users(id),
+  reason TEXT DEFAULT '',
   note TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -99,6 +102,12 @@ CREATE TABLE blood_transfers (
   dest_center_id TEXT NOT NULL REFERENCES donation_centers(id),
   status transfer_status DEFAULT 'proposed',
   leadership_confirmed_by TEXT REFERENCES users(id),
+  leadership_confirmed_at TIMESTAMPTZ,
+  leadership_reason TEXT DEFAULT '',
+  handed_over_by TEXT REFERENCES users(id),
+  carrier_name TEXT DEFAULT '',
+  arrived_at TIMESTAMPTZ,
+  received_by TEXT REFERENCES users(id),
   transport_checklist JSONB DEFAULT '{}',
   inbound_checklist JSONB DEFAULT '{}',
   cancel_reason TEXT DEFAULT '',
@@ -160,7 +169,18 @@ CREATE TABLE matching_logs (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE TABLE audit_logs (
+  id TEXT PRIMARY KEY,
+  actor_id TEXT REFERENCES users(id),
+  action TEXT NOT NULL,
+  entity TEXT DEFAULT '',
+  entity_id TEXT,
+  details JSONB DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blood_units ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blood_requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE alerts ENABLE ROW LEVEL SECURITY;

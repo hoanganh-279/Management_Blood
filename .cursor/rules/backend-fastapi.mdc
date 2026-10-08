@@ -11,5 +11,7 @@ alwaysApply: false
 - Facility matching: công thức Score **chỉ copy** từ Product §5; luôn log tiêu chí và Top-K cơ sở; lọc `allowed_to_supply_others`.
 - Shortage/Coverage: copy Product §5 — heuristic, không gắn nhãn BYT.
 - Điều chuyển: service `transfers` theo state machine Product §5.5; fulfill `qty_fulfilled` + refresh alerts **chỉ khi** `received`.
-- **Cấm** atomic `type=transfer` trên `POST /inventory/transactions` — trả lỗi hướng dẫn `/transfers`.
+- **Cấm** atomic `type=transfer` trên `POST /inventory/transactions` — trả lỗi hướng dẫn `/transfers`. `type=in` chỉ cho đơn vị mới (barcode duy nhất) qua `services/inventory.py`.
+- Quy tắc an toàn đơn vị (khớp chặt, còn hạn, số lượng, một điều chuyển mở, cách ly) nằm trong service — không rải ở router. Endpoint chi tiết điều chuyển dùng `_get_transfer_scoped`.
+- Thao tác nhạy cảm ngoài lifecycle: `audit.record(...)`. Sau thay đổi lifecycle / RBAC / kho: chạy `python -m pytest -q` trong `backend/`.
 - Bind HTTP `0.0.0.0:$PORT` khi deploy PaaS; không lộ service role trong response/log thừa.

@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.database import Base, SessionLocal, engine
+from app.database import Base, SessionLocal, engine, upgrade_sqlite_schema
 from app import models  # noqa: F401 — register metadata
 from app.routers.api import router as api_router
 from app.seed import seed_if_empty
@@ -13,6 +13,7 @@ from app.seed import seed_if_empty
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
+    upgrade_sqlite_schema()
     db = SessionLocal()
     try:
         seed_if_empty(db)
@@ -23,7 +24,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(
     title="Management Blood DSS API",
-    version="2.1.0",
+    version="2.3.0",
     description=(
         "API DSS điều phối máu BV ↔ ngân hàng máu — hỗ trợ quyết định và theo dõi "
         "giao nhận (TT26-min). Không thay thẩm quyền chuyên môn hay pháp lý."

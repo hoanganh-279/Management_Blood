@@ -1,8 +1,10 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Button, Form, Modal, Spinner } from 'react-bootstrap'
 
 /**
  * Shared confirm / review modal for sensitive ops (group S).
+ * No implicit Enter-to-confirm and no auto-focus on Confirm: a sensitive step must be an explicit click
+ * (or Enter on the focused Confirm button).
  * OTP / digital signature: production hook later — not implemented in MVP.
  */
 export default function ConfirmModal({
@@ -23,7 +25,6 @@ export default function ConfirmModal({
   onConfirm,
 }) {
   const titleId = useId()
-  const confirmRef = useRef(null)
   const [acknowledged, setAcknowledged] = useState(false)
   const [reason, setReason] = useState('')
 
@@ -31,29 +32,13 @@ export default function ConfirmModal({
     if (show) {
       setAcknowledged(false)
       setReason('')
-      const t = window.setTimeout(() => confirmRef.current?.focus(), 50)
-      return () => window.clearTimeout(t)
     }
   }, [show])
 
   const needsAck = Boolean(acknowledgeLabel)
   const reasonVisible = reasonRequired || showReason
-  const canConfirm =
-    !busy &&
-    (!needsAck || acknowledged) &&
-    (!reasonRequired || reason.trim().length > 0)
-
-  function handleKeyDown(e) {
-    if (e.key === 'Escape' && !busy) {
-      e.preventDefault()
-      onCancel?.()
-      return
-    }
-    if (e.key === 'Enter' && canConfirm && e.target?.tagName !== 'TEXTAREA') {
-      e.preventDefault()
-      onConfirm?.({ reason: reason.trim(), acknowledged })
-    }
-  }
+  const reasonOk = reason.trim().length >= 3
+  const canConfirm = !busy && (!needsAck || acknowledged) && (!reasonRequired || reasonOk)
 
   return (
     <Modal
@@ -63,7 +48,6 @@ export default function ConfirmModal({
       backdrop="static"
       keyboard={!busy}
       aria-labelledby={titleId}
-      onKeyDown={handleKeyDown}
     >
       <Modal.Header closeButton={!busy}>
         <Modal.Title id={titleId}>{title}</Modal.Title>
@@ -92,7 +76,7 @@ export default function ConfirmModal({
           />
         )}
         {reasonVisible && (
-          <Form.Group className="mt-3">
+          <Form.Group className="mt-3" controlId={`${titleId}-reason`}>
             <Form.Label>
               {reasonLabel}
               {reasonRequired ? ' *' : ''}
@@ -103,9 +87,18 @@ export default function ConfirmModal({
               value={reason}
               placeholder={reasonPlaceholder}
               disabled={busy}
+              isInvalid={reasonRequired && reason.length > 0 && !reasonOk}
               onChange={(e) => setReason(e.target.value)}
             />
+            {reasonRequired && (
+              <Form.Text className={reason.length > 0 && !reasonOk ? 'text-danger' : 'text-secondary'}>
+                Bắt buộc, tối thiểu 3 ký tự.
+              </Form.Text>
+            )}
           </Form.Group>
+        )}
+        {needsAck && !acknowledged && (
+          <div className="small text-secondary mt-2">Cần tick ô xác nhận để tiếp tục.</div>
         )}
       </Modal.Body>
       <Modal.Footer>
@@ -113,7 +106,6 @@ export default function ConfirmModal({
           {cancelLabel}
         </Button>
         <Button
-          ref={confirmRef}
           variant={confirmVariant}
           disabled={!canConfirm}
           onClick={() => onConfirm?.({ reason: reason.trim(), acknowledged })}

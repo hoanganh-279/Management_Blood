@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Col, Row, Spinner } from 'react-bootstrap'
+import { useCallback, useEffect, useState } from 'react'
+import { Col, Row, Table } from 'react-bootstrap'
 import {
   Bar,
   BarChart,
@@ -13,17 +13,31 @@ import {
   Cell,
 } from 'recharts'
 import api from '../api/client'
+import LoadState from '../components/LoadState'
+import { apiError } from '../utils/labels'
 
-const COLORS = ['#c41e3a', '#1f7a4c', '#3b82f6', '#d4a017']
+const COLORS = ['#3b6fb6', '#1f7a4c']
 
 export default function ReportsPage() {
   const [kpi, setKpi] = useState(null)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    api.get('/reports/kpis').then((r) => setKpi(r.data))
+  const load = useCallback(() => {
+    setLoading(true)
+    setError('')
+    api
+      .get('/reports/kpis')
+      .then((r) => setKpi(r.data))
+      .catch((err) => setError(apiError(err, 'Không tải được báo cáo.')))
+      .finally(() => setLoading(false))
   }, [])
 
-  if (!kpi) return <Spinner />
+  useEffect(() => {
+    load()
+  }, [load])
+
+  if (loading || error || !kpi) return <LoadState loading={loading} error={error} onRetry={load} />
 
   const bloodData = Object.entries(kpi.by_blood_type || {}).map(([name, value]) => ({
     name,
@@ -49,7 +63,7 @@ export default function ReportsPage() {
         </Col>
         <Col md={3}>
           <div className="kpi-card">
-            <div className="label">Wastage</div>
+            <div className="label">Tỷ lệ hết hạn / hủy bỏ</div>
             <div className="value">{kpi.wastage_rate_pct}%</div>
           </div>
         </Col>
@@ -88,7 +102,7 @@ export default function ReportsPage() {
         </Col>
         <Col md={4}>
           <div className="kpi-card">
-            <div className="label">Matching runs</div>
+            <div className="label">Số lần chạy matching</div>
             <div className="value">{kpi.matching_runs}</div>
           </div>
         </Col>
@@ -104,10 +118,20 @@ export default function ReportsPage() {
                 <XAxis dataKey="name" />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="value" fill="#c41e3a" />
+                <Bar dataKey="value" fill="#3b6fb6" />
               </BarChart>
             </ResponsiveContainer>
           </div>
+          <Table size="sm" className="mt-2 visually-hidden" aria-label="Tồn khả dụng theo nhóm máu">
+            <tbody>
+              {bloodData.map((r) => (
+                <tr key={r.name}>
+                  <th scope="row">{r.name}</th>
+                  <td>{r.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </Col>
         <Col md={5}>
           <div className="table-panel p-3" style={{ height: 320 }}>

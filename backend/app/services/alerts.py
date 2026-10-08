@@ -24,7 +24,7 @@ def refresh_alerts_for_requests(db: Session) -> list[Alert]:
         .all()
     )
     for req in active_reqs:
-        inv = inventory_count(db, req.blood_type, req.center_id)
+        inv = inventory_count(db, req.blood_type, req.center_id, req.product_type)
         remaining = max(0, req.qty_needed - req.qty_fulfilled)
         shortage = compute_shortage(remaining, inv)
         coverage = compute_coverage(inv, max(1, remaining))

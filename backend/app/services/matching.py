@@ -19,13 +19,21 @@ def haversine_km(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
     return 2 * r * math.asin(math.sqrt(a))
 
 
-def inventory_count(db: Session, blood_type: str, center_id: str | None = None) -> int:
+def inventory_count(
+    db: Session,
+    blood_type: str,
+    center_id: str | None = None,
+    product_type: str | None = None,
+) -> int:
     q = db.query(BloodUnit).filter(
         BloodUnit.blood_type == blood_type,
         BloodUnit.status.in_([BloodUnitStatus.ready, BloodUnitStatus.critical]),
+        BloodUnit.expires_at > datetime.utcnow(),
     )
     if center_id:
         q = q.filter(BloodUnit.center_id == center_id)
+    if product_type:
+        q = q.filter(BloodUnit.product_type == product_type)
     return q.count()
 
 
@@ -53,17 +61,33 @@ def units_expiring_within(db: Session, hours: int = 48) -> int:
     )
 
 
-def _ready_units_at_center(db: Session, center_id: str, blood_type: str) -> list[BloodUnit]:
+def _ready_units_at_center(
+    db: Session, center_id: str, blood_type: str, product_type: str
+) -> list[BloodUnit]:
+    """Exact ABO/Rh + product match, not expired, not already in an open transfer."""
+    from app.services.transfers import OPEN_STATUSES
+    from app.models import BloodTransfer
+
+    in_open_transfer = db.query(BloodTransfer.blood_unit_id).filter(
+        BloodTransfer.status.in_(OPEN_STATUSES)
+    )
     return (
         db.query(BloodUnit)
         .filter(
             BloodUnit.center_id == center_id,
             BloodUnit.blood_type == blood_type,
+            BloodUnit.product_type == product_type,
             BloodUnit.status.in_([BloodUnitStatus.ready, BloodUnitStatus.critical]),
+            BloodUnit.expires_at > datetime.utcnow(),
+            ~BloodUnit.id.in_(in_open_transfer),
         )
         .order_by(BloodUnit.expires_at)
         .all()
     )
+
+
+def eligible_units(db: Session, request: BloodRequest, center_id: str) -> list[BloodUnit]:
+    return _ready_units_at_center(db, center_id, request.blood_type, request.product_type)
 
 
 def score_facility(
@@ -145,7 +169,7 @@ def run_matching(
             continue
         if not center.allowed_to_supply_others:
             continue
-        units = _ready_units_at_center(db, center.id, request.blood_type)
+        units = _ready_units_at_center(db, center.id, request.blood_type, request.product_type)
         if not units:
             continue
         dist = haversine_km(center.lat, center.lng, dest_lat, dest_lng)

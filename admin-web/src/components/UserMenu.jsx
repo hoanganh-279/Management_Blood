@@ -1,17 +1,23 @@
+import { useEffect, useState } from 'react'
 import { Dropdown } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
+import api from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import { ROLE_LABEL } from '../utils/labels'
 import UserAvatar from './UserAvatar'
-
-const ROLE_LABEL = {
-  admin: 'Admin / Điều phối',
-  staff_hospital: 'Nhân viên bệnh viện',
-  staff_bank: 'Nhân viên ngân hàng máu',
-}
 
 export default function UserMenu() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [centerName, setCenterName] = useState('')
+
+  useEffect(() => {
+    if (!user?.center_id) return
+    api
+      .get('/centers')
+      .then((r) => setCenterName(r.data.find((c) => c.id === user.center_id)?.name || user.center_id))
+      .catch(() => setCenterName(user.center_id))
+  }, [user?.center_id])
 
   if (!user) return null
 
@@ -48,7 +54,7 @@ export default function UserMenu() {
           </div>
           <div className="mb-2">
             <div className="text-secondary">Cơ sở gắn</div>
-            <div>{user.center_id || '—'}</div>
+            <div>{user.center_id ? centerName || user.center_id : '—'}</div>
           </div>
           <div>
             <div className="text-secondary">Trạng thái</div>

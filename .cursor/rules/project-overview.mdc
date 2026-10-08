@@ -1,11 +1,11 @@
 ---
-description: Project overview — DSS BV↔NHM, not donor app
+description: Project overview — DSS BV↔NHM
 alwaysApply: true
 ---
 
 # Project overview — Management Blood
 
-- Sản phẩm là **DSS data-driven** điều phối máu giữa **bệnh viện và ngân hàng máu** — không phải app huy động người hiến.
+- Sản phẩm là **DSS data-driven** điều phối máu giữa **bệnh viện và ngân hàng máu**.
 - Khung pháp lý khảo sát: TT 26/2013 (xem [docs/can-cu-phap-ly.md](../../docs/can-cu-phap-ly.md)) — DSS hỗ trợ giao nhận, không thay thẩm quyền pháp lý/y tế.
 - Đọc theo [AGENTS.md](../../AGENTS.md): Product → can-cu-phap-ly → thiet-ke → ke-hoach → README.
 - Monorepo: `admin-web/` (React+Vite+Bootstrap), `backend/` (FastAPI), `supabase/`.
