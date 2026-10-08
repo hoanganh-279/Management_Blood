@@ -77,11 +77,11 @@ export default function InventoryPage() {
         <div className="alert-banner">Cảnh báo gần hết hạn &lt;{params.get('expiring')}h — lọc đang bật</div>
       )}
 
-      <Row className="g-2 mb-3">
+      <Row className="g-3 mb-3">
         {byType.map((x) => {
           const active = bloodType === x.t
           return (
-            <Col key={x.t} xs={6} md={3} lg>
+            <Col key={x.t} xs={6} md={3}>
               <button
                 type="button"
                 className={`kpi-card kpi-filter text-start w-100 ${x.critical ? 'border-danger' : ''} ${active ? 'is-active' : ''}`}
@@ -108,7 +108,7 @@ export default function InventoryPage() {
       </Form.Select>
 
       <div className="table-panel">
-        <Table hover size="sm" className="mb-0">
+        <Table hover size="sm" responsive className="mb-0 text-nowrap">
           <thead>
             <tr>
               <th>Barcode</th>

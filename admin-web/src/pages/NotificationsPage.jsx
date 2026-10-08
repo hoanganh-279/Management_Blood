@@ -85,7 +85,7 @@ export default function NotificationsPage() {
 
   return (
     <div>
-      <div className="d-flex justify-content-between mb-3">
+      <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
         <div>
           <h1 className="h3 mb-1">Thông báo nội bộ</h1>
           <p className="text-secondary mb-0">Đề xuất / hoàn thành điều chuyển · stub DB</p>

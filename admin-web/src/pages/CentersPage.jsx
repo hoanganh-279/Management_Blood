@@ -81,6 +81,24 @@ export default function CentersPage() {
           {feedback.text}
         </Alert>
       )}
+      <div className="user-kpi-grid mb-3">
+        <div className="kpi-card">
+          <div className="label">Tổng cơ sở</div>
+          <div className="value">{list.length}</div>
+        </div>
+        <div className="kpi-card kpi-tone-warn">
+          <div className="label">Bệnh viện</div>
+          <div className="value">{list.filter((c) => c.facility_type === 'hospital').length}</div>
+        </div>
+        <div className="kpi-card kpi-tone-danger">
+          <div className="label">Ngân hàng máu</div>
+          <div className="value">{list.filter((c) => c.facility_type === 'bank').length}</div>
+        </div>
+        <div className="kpi-card kpi-tone-safe">
+          <div className="label">Được cung cấp cho CS khác</div>
+          <div className="value">{list.filter((c) => c.allowed_to_supply_others).length}</div>
+        </div>
+      </div>
       <div className="table-panel">
         <Table hover size="sm" className="mb-0">
           <thead>

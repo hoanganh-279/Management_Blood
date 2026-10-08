@@ -63,7 +63,7 @@ export default function LoginPage() {
             size: 'large',
             text: 'signin_with',
             shape: 'rectangular',
-            width: 320,
+            width: 400, // ponytail: 400 là tối đa Google cho phép; form rộng hơn thì nút vẫn hơi hẹp hơn
             locale: 'vi',
           })
           setGoogleReady(true)
@@ -133,7 +133,7 @@ export default function LoginPage() {
           <div className="text-danger small mb-2">• Hệ thống nội bộ</div>
           <h2 className="h3 mb-1">Đăng nhập</h2>
           <p className="text-secondary mb-4">
-            Dành cho nhân viên bệnh viện, ngân hàng máu và điều phối.
+            Dành cho nhân viên bệnh viện, ngân hàng máu và điều phối
           </p>
           {error && (
             <Alert variant="danger" dismissible onClose={() => setError('')}>
@@ -178,7 +178,7 @@ export default function LoginPage() {
             <p className="text-secondary small text-center mt-2 mb-0">Đang tải đăng nhập Google…</p>
           )}
 
-          <p className="disclaimer mt-3 mb-0">Kết quả hệ thống chỉ hỗ trợ quyết định vận hành.</p>
+          <p className="disclaimer text-center mt-3 mb-0">Kết quả hệ thống chỉ hỗ trợ quyết định vận hành</p>
         </div>
       </div>
     </div>
